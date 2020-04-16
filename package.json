@@ -38,6 +38,36 @@
                 "scopeName": "source.commonlisp",
                 "path": "./syntaxes/commonlisp.tmLanguage"
             }
+        ],
+        "commands": [
+            {
+                "command": "lisp.replStart",
+                "title": "Lisp: REPL - start"
+            },
+            {
+                "command": "lisp.compileAndLoadFile",
+                "title": "Lisp: Compile And Load File"
+            },
+            {
+                "command": "lisp.eval",
+                "title": "Lisp: Evaluate",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "lisp.interrupt",
+                "title": "Lisp: Interrupt"
+            },
+            {
+                "command": "lisp.newlineAndFormat",
+                "title": "Lisp: Newline and Format"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "lisp.newlineAndFormat",
+                "key": "enter",
+                "when": "editorLangId == commonlisp && editorTextFocus && !editorReadOnly"
+            }
         ]
     },
     "scripts": {
