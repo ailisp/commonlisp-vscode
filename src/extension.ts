@@ -11,8 +11,33 @@ import {
 
 let languageClient: LanguageClient;
 
-function startRepl() {
+let repl: vscode.Terminal | null = null;
 
+function startRepl() {
+    if (repl) {
+        repl.show();
+    } else {
+        repl = vscode.window.createTerminal(
+            "Common Lisp REPL",
+            "ros",
+            ["run"]
+        );
+        repl.show();
+    }
+}
+
+function getWebviewContent() {
+    return `<!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Cat Coding</title>
+  </head>
+  <body>
+      <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" />
+  </body>
+  </html>`;
 }
 
 function getTextDocumentIdentifier() {
@@ -66,10 +91,9 @@ async function newlineAndFormat() {
     let document = editor.document;
     await editor.edit(e => e.insert(
         vscode.window.activeTextEditor!.selection.active,
-        "\n_")).then((_) =>
-            vscode.commands.executeCommand('editor.action.format')).then((_) =>
-                editor.edit(e => e.delete(
-                    new vscode.Range(editor.selection.active.translate({ characterDelta: -1 }), editor.selection.active))));
+        "\n_"));
+    await vscode.commands.executeCommand('editor.action.format');
+    await editor.edit(e => e.delete(new vscode.Range(editor.selection.active.translate({ characterDelta: -1 }), editor.selection.active)));
 }
 
 
@@ -108,6 +132,11 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(commands.registerCommand("lisp.interrupt", () => interrupt()));
     context.subscriptions.push(commands.registerCommand("lisp.replStart", () => startRepl()));
     context.subscriptions.push(commands.registerCommand("lisp.newlineAndFormat", newlineAndFormat));
+    context.subscriptions.push(vscode.window.onDidCloseTerminal((terminal) => {
+        if (terminal == repl) {
+            repl = null;
+        }
+    }));
 }
 
 export function deactivate() { }
