@@ -97,12 +97,15 @@ async function newlineAndFormat() {
 }
 
 
+
 export function activate(context: ExtensionContext) {
     let serverOptions: ServerOptions;
 
     serverOptions = () => new Promise<child_process.ChildProcess>((resolve, reject) => {
         function spawnServer(...args: string[]): child_process.ChildProcess {
-            let childProcess = child_process.spawn("cl-lsp", ["stdio"]);
+            let lsppath = workspace.getConfiguration().get<string>('commonlisp.lsppath')!;
+            console.log(lsppath);
+            let childProcess = child_process.spawn(lsppath, ["stdio"]);
             return childProcess;
         }
         resolve(spawnServer());
