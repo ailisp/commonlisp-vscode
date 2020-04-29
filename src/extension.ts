@@ -89,11 +89,30 @@ function interrupt() {
 async function newlineAndFormat() {
     let editor = vscode.window.activeTextEditor!;
     let document = editor.document;
+    let position = editor.selection.active;
     await editor.edit(e => e.insert(
-        vscode.window.activeTextEditor!.selection.active,
-        "\n_"));
-    await vscode.commands.executeCommand('editor.action.format');
-    await editor.edit(e => e.delete(new vscode.Range(editor.selection.active.translate({ characterDelta: -1 }), editor.selection.active)));
+        position,
+        "\n"));
+    position = editor.selection.active;
+    let edits = await languageClient.sendRequest("textDocument/onTypeFormatting", {
+        textDocument: { "uri": "file://" + document.uri.fsPath },
+        position,
+        ch: "\n",
+        options: {
+            tabSize: editor.options.tabSize,
+            insertSpaces: editor.options.insertSpaces,
+        }
+    });
+
+    const workEdits = new vscode.WorkspaceEdit();
+    workEdits.set(document.uri, edits as vscode.TextEdit[]); // give the edits
+    vscode.workspace.applyEdit(workEdits); // apply the edits
+    
+    // let editor = vscode.window.activeTextEditor!;
+    // let document = editor.document;
+
+    // await vscode.commands.executeCommand('editor.action.format');
+    // await editor.edit(e => e.delete(new vscode.Range(editor.selection.active.translate({ characterDelta: -1 }), editor.selection.active)));
 }
 
 

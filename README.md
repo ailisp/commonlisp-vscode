@@ -5,7 +5,7 @@ Common Lisp Editing Extension for vscode
 ## Features
 - Common Lisp syntax highlight, Auto indenting/formating, folding.
 - (Optional) Structural editing and navigation provided by [strict-paredit-vscode](https://github.com/ailisp/strict-paredit-vscode).
-- Autocompletion, documentation on hover, compile & load file, REPL backed by [cl-lsp](https://github.com/ailisp/cl-lsp) language server.
+- Autocompletion, documentation on hover, go to definition, compile & load file, REPL backed by [cl-lsp](https://github.com/ailisp/cl-lsp) language server.
 
 ## Requirements
 
@@ -15,7 +15,6 @@ Common Lisp Editing Extension for vscode
 
 ## Known Issues
 
-- Auto formatting is not perfect, need improvement in common lisp language server side
 - REPL is a seperate process to language server, would be nice to be the same one
 - On hover document has some additional not helpful information.
 - No debugger, but planned to come soon.
@@ -26,6 +25,10 @@ Common Lisp Editing Extension for vscode
 ## Release Notes
 
 Users appreciate release notes as you update your extension.
+
+### 0.0.3
+
+- Fix auto indenting on newline, close to edit lisp file in emacs
 
 ### 0.0.2
 
