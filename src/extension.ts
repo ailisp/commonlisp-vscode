@@ -1,12 +1,16 @@
 import * as vscode from 'vscode';
 import * as child_process from 'child_process';
+import * as net from 'net';
+import * as portfinder from 'portfinder';
+import * as util from 'util';
 import {
     workspace, Disposable, ExtensionContext, languages,
     window, commands, InputBoxOptions
 } from 'vscode';
 import {
     LanguageClient, LanguageClientOptions, SettingMonitor, ServerOptions,
-    TransportKind, TextDocumentIdentifier, TextDocumentPositionParams
+    TransportKind, TextDocumentIdentifier, TextDocumentPositionParams,
+    StreamInfo
 } from 'vscode-languageclient';
 
 let languageClient: LanguageClient;
@@ -24,20 +28,6 @@ function startRepl() {
         );
         repl.show();
     }
-}
-
-function getWebviewContent() {
-    return `<!DOCTYPE html>
-  <html lang="en">
-  <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Cat Coding</title>
-  </head>
-  <body>
-      <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" />
-  </body>
-  </html>`;
 }
 
 function getTextDocumentIdentifier() {
@@ -107,28 +97,45 @@ async function newlineAndFormat() {
     const workEdits = new vscode.WorkspaceEdit();
     workEdits.set(document.uri, edits as vscode.TextEdit[]); // give the edits
     vscode.workspace.applyEdit(workEdits); // apply the edits
-    
-    // let editor = vscode.window.activeTextEditor!;
-    // let document = editor.document;
-
-    // await vscode.commands.executeCommand('editor.action.format');
-    // await editor.edit(e => e.delete(new vscode.Range(editor.selection.active.translate({ characterDelta: -1 }), editor.selection.active)));
 }
 
-
+function retry<T>(retries: number, fn: () => Promise<T>): Promise<T> {
+    return fn().catch((err) => retries > 1 ? retry(retries - 1, fn) : Promise.reject(err));
+}
+const pause = (duration: number) => new Promise(res => setTimeout(res, duration));
+function backoff<T>(retries: number, fn: () => Promise<T>, delay = 500): Promise<T> {
+    return fn().catch(err => retries > 1
+        ? pause(delay).then(() => backoff(retries - 1, fn, delay * 2))
+        : Promise.reject(err));
+}
 
 export function activate(context: ExtensionContext) {
     let serverOptions: ServerOptions;
-
-    serverOptions = () => new Promise<child_process.ChildProcess>((resolve, reject) => {
-        function spawnServer(...args: string[]): child_process.ChildProcess {
-            let lsppath = workspace.getConfiguration().get<string>('commonlisp.lsppath')!;
-            console.log(lsppath);
-            let childProcess = child_process.spawn(lsppath, ["stdio"]);
-            return childProcess;
-        }
-        resolve(spawnServer());
-    });
+    console.log('hehe')
+    serverOptions = async () => {
+        let lsppath = workspace.getConfiguration().get<string>('commonlisp.lsppath')!;
+        console.log(lsppath);
+        
+        let port = await portfinder.getPortPromise({
+            port: 10003
+        });
+        let client = new net.Socket();
+        let childProcess = child_process.spawn(lsppath, ["tcp", port.toString()]);
+        return await backoff(5, () => {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    reject(new Error("Connection to lsp times out"))
+                }, 1000);
+                client.connect(port, "127.0.0.1");
+                client.once('connect', () => {
+                    resolve({
+                        reader: client,
+                        writer: client,
+                    });
+                });
+            })
+        });
+    };
 
     let clientOptions: LanguageClientOptions = {
         documentSelector: ["commonlisp"],
@@ -161,4 +168,8 @@ export function activate(context: ExtensionContext) {
     }));
 }
 
-export function deactivate() { }
+export function deactivate() {
+    // if (lspProcess) {
+    //     lspProcess.kill();
+    // }
+}
