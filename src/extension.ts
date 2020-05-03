@@ -17,15 +17,20 @@ let languageClient: LanguageClient;
 
 let repl: vscode.Terminal | null = null;
 
+function startLSP() {
+    return vscode.window.createTerminal({
+        name: "Common Lisp REPL",
+        shellPath: "cl-lsp",
+        shellArgs: ["tcp", "10003"],
+        hideFromUser: true,
+    });
+}
+
 function startRepl() {
     if (repl) {
         repl.show();
     } else {
-        repl = vscode.window.createTerminal(
-            "Common Lisp REPL",
-            "ros",
-            ["run"]
-        );
+        repl = startLSP();
         repl.show();
     }
 }
@@ -116,11 +121,13 @@ export function activate(context: ExtensionContext) {
         let lsppath = workspace.getConfiguration().get<string>('commonlisp.lsppath')!;
         console.log(lsppath);
         
-        let port = await portfinder.getPortPromise({
-            port: 10003
-        });
+        // let port = await portfinder.getPortPromise({
+        //     port: 10003
+        // });
+        let port = 10003;
         let client = new net.Socket();
-        let childProcess = child_process.spawn(lsppath, ["tcp", port.toString()]);
+        repl = startLSP();
+        // let childProcess = child_process.spawn(lsppath, ["tcp", port.toString()]);
         return await backoff(5, () => {
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
@@ -164,12 +171,10 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(vscode.window.onDidCloseTerminal((terminal) => {
         if (terminal == repl) {
             repl = null;
+            repl = startLSP();
         }
     }));
 }
 
 export function deactivate() {
-    // if (lspProcess) {
-    //     lspProcess.kill();
-    // }
 }
