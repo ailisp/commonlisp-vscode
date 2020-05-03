@@ -15,8 +15,8 @@ Common Lisp Editing Extension for vscode
 
 ## Known Issues
 
-- REPL is a seperate process to language server, would be nice to be the same one
-- On hover document has some additional not helpful information.
+- REPL mixed with language server (okay) 
+- REPL without readline
 - No debugger, but planned to come soon.
 
 ## Credits
@@ -25,6 +25,10 @@ Common Lisp Editing Extension for vscode
 ## Release Notes
 
 Users appreciate release notes as you update your extension.
+
+### 0.0.4
+
+- LSP and REPL use same lisp process, so evaluate in file is available to REPL now
 
 ### 0.0.3
 

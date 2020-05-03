@@ -2,7 +2,7 @@
     "name": "commonlisp-vscode",
     "displayName": "commonlisp-vscode",
     "description": "Common Lisp Editing Extension for vscode",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "publisher": "ailisp",
     "repository": {
         "type": "git",
