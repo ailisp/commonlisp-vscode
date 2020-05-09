@@ -15,8 +15,7 @@ Common Lisp Editing Extension for vscode
 
 ## Known Issues
 
-- REPL mixed with language server (okay) 
-- REPL without readline
+- REPL without readline (fix exist in pending PR)
 - No debugger, but planned to come soon.
 
 ## Credits
@@ -25,6 +24,10 @@ Common Lisp Editing Extension for vscode
 ## Release Notes
 
 Users appreciate release notes as you update your extension.
+
+### 0.1.0
+
+- REPL doesn't show lsp messages, is a clean PREPL now
 
 ### 0.0.4
 
