@@ -17,20 +17,25 @@ let languageClient: LanguageClient;
 
 let repl: vscode.Terminal | null = null;
 
-function startLSP() {
+let lspPort: number | null = null;
+
+async function startLSP() {
+    lspPort = await portfinder.getPortPromise({
+        port: 10003
+    });
     return vscode.window.createTerminal({
         name: "Common Lisp REPL",
         shellPath: "cl-lsp",
-        shellArgs: ["tcp", "10003"],
+        shellArgs: ["tcp", lspPort.toString()],
         hideFromUser: true,
     });
 }
 
-function startRepl() {
+async function startRepl() {
     if (repl) {
         repl.show();
     } else {
-        repl = startLSP();
+        let repl = await startLSP();
         repl.show();
     }
 }
@@ -114,26 +119,18 @@ function backoff<T>(retries: number, fn: () => Promise<T>, delay = 500): Promise
         : Promise.reject(err));
 }
 
-export function activate(context: ExtensionContext) {
+export async function activate(context: ExtensionContext) {
     let serverOptions: ServerOptions;
-    console.log('hehe')
     serverOptions = async () => {
         let lsppath = workspace.getConfiguration().get<string>('commonlisp.lsppath')!;
-        console.log(lsppath);
-        
-        // let port = await portfinder.getPortPromise({
-        //     port: 10003
-        // });
-        let port = 10003;
         let client = new net.Socket();
-        repl = startLSP();
-        // let childProcess = child_process.spawn(lsppath, ["tcp", port.toString()]);
+        repl = await startLSP();
         return await backoff(5, () => {
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
                     reject(new Error("Connection to lsp times out"))
                 }, 1000);
-                client.connect(port, "127.0.0.1");
+                client.connect(lspPort!, "127.0.0.1");
                 client.once('connect', () => {
                     resolve({
                         reader: client,
@@ -168,10 +165,10 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(commands.registerCommand("lisp.interrupt", () => interrupt()));
     context.subscriptions.push(commands.registerCommand("lisp.replStart", () => startRepl()));
     context.subscriptions.push(commands.registerCommand("lisp.newlineAndFormat", newlineAndFormat));
-    context.subscriptions.push(vscode.window.onDidCloseTerminal((terminal) => {
+    context.subscriptions.push(vscode.window.onDidCloseTerminal(async (terminal) => {
         if (terminal == repl) {
             repl = null;
-            repl = startLSP();
+            repl = await startLSP();
         }
     }));
 }
