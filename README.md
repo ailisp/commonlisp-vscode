@@ -25,6 +25,10 @@ Common Lisp Editing Extension for vscode
 
 Users appreciate release notes as you update your extension.
 
+### 0.1.1
+
+- Support open multiple commonlisp-vscode in multiple vscode window
+
 ### 0.1.0
 
 - REPL doesn't show lsp messages, is a clean PREPL now
