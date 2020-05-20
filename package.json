@@ -72,6 +72,16 @@
                 "command": "lisp.newlineAndFormat",
                 "key": "enter",
                 "when": "editorLangId == commonlisp && editorTextFocus && !editorReadOnly"
+            },
+            {
+                "command": "lisp.eval",
+                "key": "ctrl+enter",
+                "when": "editorLangId == commonlisp && editorTextFocus"
+            },
+            {
+                "command": "lisp.replStart",
+                "key": "ctrl+shift+enter",
+                "when": "editorLangId == commonlisp && editorTextFocus"
             }
         ],
         "configuration": [

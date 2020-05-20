@@ -10,12 +10,14 @@ Common Lisp Editing Extension for vscode
 ## Requirements
 
 - Install [roswell](https://github.com/roswell/roswell) and have `~/.roswell/bin` in `PATH`
-- Install [cl-lsp](https://github.com/ailisp/cl-lsp): `ros install ailisp/cl-lsp`
+- Install [cl-lsp](https://github.com/ailisp/cl-lsp), above two is required because original package doesn't have readline support in prepl.
+  - `ros install ailisp/linedit`
+  - `ros install ailisp/prepl`
+  - `ros install ailisp/cl-lsp`
 - (Recommend) Install [strict-paredit-vscode](https://github.com/ailisp/strict-paredit-vscode): `ext install ailisp.strict-paredit`, which provides best parens edit experience close to Emacs.
 
 ## Known Issues
 
-- REPL without readline (fix exist in pending PR)
 - No debugger, but planned to come soon.
 
 ## Credits
@@ -24,6 +26,11 @@ Common Lisp Editing Extension for vscode
 ## Release Notes
 
 Users appreciate release notes as you update your extension.
+
+### 0.2.0
+
+- support readline editing (arrow key works, history, etc.) in repl
+- default keybinding to eva (Ctrl+Enter) and to start REPL (Ctrl+Shift+Enter) 
 
 ### 0.1.1
 
