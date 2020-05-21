@@ -15,6 +15,9 @@ Common Lisp Editing Extension for vscode
   - `ros install ailisp/prepl`
   - `ros install ailisp/cl-lsp`
 - (Recommend) Install [strict-paredit-vscode](https://github.com/ailisp/strict-paredit-vscode): `ext install ailisp.strict-paredit`, which provides best parens edit experience close to Emacs.
+- (Recommend) Use sbcl instead of sbcl_bin in roswell, to get go to definition with symbols in `common-lisp` package:
+  - `ros install sbcl`
+  - `ros use sbcl`
 
 ## Known Issues
 
