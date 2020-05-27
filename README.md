@@ -2,6 +2,9 @@
 
 Common Lisp Editing Extension for vscode
 
+## Update
+**cl-lsp is updated with a cleaner REPL! Please update by do `git pull` in `~/.roswell/local-projects/ailisp/cl-lsp`**
+
 ## Features
 - Common Lisp syntax highlight, Auto indenting/formating, folding.
 - (Optional) Structural editing and navigation provided by [strict-paredit-vscode](https://github.com/ailisp/strict-paredit-vscode).
@@ -30,10 +33,13 @@ Common Lisp Editing Extension for vscode
 
 Users appreciate release notes as you update your extension.
 
+### 0.3.0
+- avoid lsp server error mixed with REPL, record error in log
+
 ### 0.2.0
 
 - support readline editing (arrow key works, history, etc.) in repl
-- default keybinding to eva (Ctrl+Enter) and to start REPL (Ctrl+Shift+Enter) 
+- default keybinding to eval (Ctrl+Enter) and to start REPL (Ctrl+Shift+Enter) 
 
 ### 0.1.1
 
