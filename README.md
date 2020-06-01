@@ -5,6 +5,9 @@ Common Lisp Editing Extension for vscode
 ## Update
 **cl-lsp is updated with a cleaner REPL! Please update by do `git pull` in `~/.roswell/local-projects/ailisp/cl-lsp`**
 
+## Screenshot
+(/screenshot.png)
+
 ## Features
 - Common Lisp syntax highlight, Auto indenting/formating, folding.
 - (Optional) Structural editing and navigation provided by [strict-paredit-vscode](https://github.com/ailisp/strict-paredit-vscode).
