@@ -35,6 +35,9 @@ Common Lisp Editing Extension for vscode
 
 Users appreciate release notes as you update your extension.
 
+### 0.3.1
+- Use absolute path as default cl-lsp path
+
 ### 0.3.0
 - avoid lsp server error mixed with REPL, record error in log
 
