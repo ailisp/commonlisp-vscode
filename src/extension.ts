@@ -3,6 +3,7 @@ import * as child_process from 'child_process';
 import * as net from 'net';
 import * as portfinder from 'portfinder';
 import * as util from 'util';
+
 import {
     workspace, Disposable, ExtensionContext, languages,
     window, commands, InputBoxOptions
@@ -12,6 +13,7 @@ import {
     TransportKind, TextDocumentIdentifier, TextDocumentPositionParams,
     StreamInfo
 } from 'vscode-languageclient';
+import { homedir } from 'os';
 
 let languageClient: LanguageClient;
 
@@ -19,13 +21,21 @@ let repl: vscode.Terminal | null = null;
 
 let lspPort: number | null = null;
 
+function expandHomeDir(path: string): string {
+    if (path.startsWith('~/')) {
+        return homedir()+path.slice(1);
+    }
+    return path;
+}
+
 async function startLSP() {
     lspPort = await portfinder.getPortPromise({
         port: 10003
     });
+    let lsppath = expandHomeDir(workspace.getConfiguration().get<string>('commonlisp.lsppath')!);
     return vscode.window.createTerminal({
         name: "Common Lisp REPL",
-        shellPath: "cl-lsp",
+        shellPath: lsppath,
         shellArgs: ["tcp", lspPort.toString()],
         hideFromUser: true,
     });
@@ -122,7 +132,6 @@ function backoff<T>(retries: number, fn: () => Promise<T>, delay = 500): Promise
 export async function activate(context: ExtensionContext) {
     let serverOptions: ServerOptions;
     serverOptions = async () => {
-        let lsppath = workspace.getConfiguration().get<string>('commonlisp.lsppath')!;
         let client = new net.Socket();
         repl = await startLSP();
         return await backoff(5, () => {
